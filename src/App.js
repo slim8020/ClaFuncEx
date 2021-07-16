@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { View, Text, Button } from 'react-native';
 import styled from 'styled-components/native';
 
@@ -30,16 +30,24 @@ const Title = styled.Text`
 `;
 
 const FuncComp= param =>{
-    var numberState = useState(param.initNumber);
-    var dateState = useState(new Date().toString());
+    var [num, setNum] = useState(param.initNumber);
+    var [date, setDate] = useState(new Date().toString());
 
-    var num = numberState[0];
-    var setNum = numberState[1];
+    useEffect(function(){
+        console.log('func=> useEffect #1');
+        return function cleanup(){
+            console.log('func=> cleanup #1');
+        };
+    },[]);
 
-    var date = dateState[0];
-    var setDate = dateState[1];
+    useEffect(function(){
+        console.log('func=> useEffect #2');
+        return function cleanup(){
+            console.log('func=> cleanup #2');
+        };
+    },[date]);
 
-    console.log('numberState', numberState);
+    // console.log('func=> render()');
 
     return (
         <TextContainer>
@@ -69,6 +77,16 @@ class ClassComp extends React.Component{
         console.log('class => componentDidMount');
     }
 
+    componentDidUpdate()
+    {
+        console.log('class => componentDidUpdate');
+    }
+
+    componentWillUnmount()
+    {
+        console.log('class => componentWillUnmount');
+    }
+
     render(){
         console.log('class => render');
         return(
@@ -84,12 +102,20 @@ class ClassComp extends React.Component{
 }
 
 export default function App() {
+
+    const [funcShow, setFuncShow] = useState(true);
+    const [claShow, setClaShow] = useState(true);
+
+
  
   return (
       <TextContainer>
           <Title>Hello World!</Title>
-          <FuncComp  initNumber={3}/>
-          <ClassComp initNumber={3}/>
+          <StyledButton title="Toggle Func" onPress={function(){setFuncShow(funcShow ? false : true)}}/>
+          <StyledButton title="Toggle Class" onPress={function(){setClaShow(claShow ? false : true)}}/>
+         
+         {funcShow ? <FuncComp  initNumber={3}/> : null}
+         {claShow ? <ClassComp initNumber={3}/> : null}
       </TextContainer>
   );
 }
